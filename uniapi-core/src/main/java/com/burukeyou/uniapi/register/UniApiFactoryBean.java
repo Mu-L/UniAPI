@@ -3,6 +3,7 @@ package com.burukeyou.uniapi.register;
 
 import com.burukeyou.uniapi.core.proxy.AnnotationInvokeProxy;
 import com.burukeyou.uniapi.core.proxy.ApiProxyFactory;
+import com.burukeyou.uniapi.support.ClassUtil;
 import com.burukeyou.uniapi.support.ProxySupport;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -12,9 +13,13 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caizhihao
@@ -108,7 +113,21 @@ public class UniApiFactoryBean extends BaseSpringAware implements FactoryBean<Ob
     }
 
     private Object getCallProxy() throws Exception {
-        return new Object();
+        return Proxy.newProxyInstance(ProxyLazyTargetSource.class.getClassLoader(), new Class[]{targetClass}, new InvocationHandler() {
+             ConcurrentHashMap<Method, MethodHandle> methodHandleMap = new ConcurrentHashMap<>();
+
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if (method.isDefault()){
+                    MethodHandle defaultMethodHandle = methodHandleMap.computeIfAbsent(method, key -> {
+                        MethodHandle methodHandle = ClassUtil.getSpecialMethodHandle(method);
+                        return methodHandle.bindTo(proxy);
+                    });
+                    return defaultMethodHandle.invokeWithArguments(args);
+                }
+                return null;
+            }
+        });
     }
 
     @Override

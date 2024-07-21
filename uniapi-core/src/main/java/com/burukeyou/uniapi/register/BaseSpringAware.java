@@ -10,11 +10,13 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
 /**
  * @author caizhihao
  */
+@Primary
 public class BaseSpringAware extends SpringBeanContext implements EnvironmentAware,
                                         BeanFactoryAware,
                                         BeanNameAware , BeanClassLoaderAware {

@@ -7,6 +7,7 @@ import com.burukeyou.demo.api.UserServiceApi;
 import com.burukeyou.demo.entity.*;
 import com.burukeyou.uniapi.http.core.response.HttpBinaryResponse;
 import com.burukeyou.uniapi.http.core.response.HttpResponse;
+import com.burukeyou.uniapi.http.util.UniHttpBuilder;
 import okhttp3.Cookie;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -172,7 +173,17 @@ public class HttpApiTest {
 
     @Test
     public void testSimple(){
+        SimpleServiceApi proxy = UniHttpBuilder.getProxy(SimpleServiceApi.class);
+        String s = proxy.add2("222");
+        System.out.println();
+
         String add = simpleServiceApi.add2("1");
+        System.out.println();
+    }
+
+    @Test
+    public void test22(){
+        String add = simpleServiceApi.getxxxx("1");
         System.out.println();
     }
 }

@@ -31,6 +31,10 @@ public class HttpApiAnnotationProxy  extends AbstractAnnotationInvokeProxy<HttpA
             }
         }
 
-        return null;
+        try {
+            return methodInvocation.proceed();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 }
